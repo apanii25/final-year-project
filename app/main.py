@@ -1,4 +1,5 @@
 from pathlib import Path
+import os
 
 import streamlit as st
 import pickle as pickle
@@ -184,18 +185,20 @@ def main():
   
     
   st.set_page_config(page_title="LTA",page_icon=":bar_chart:",layout="wide")
-
-
+            
+            
   try:
       users = fetch_users()
       emails = []
       usernames = []
       passwords = []
+      gfm=[]
 
       for user in users:
           emails.append(user['key'])
           usernames.append(user['username'])
           passwords.append(user['password'])
+          gfm.append('gfm')
 
       credentials = {'usernames': {}}
       for index in range(len(emails)):
@@ -228,6 +231,37 @@ def main():
                 """, unsafe_allow_html=True)
 
                     st.write("Welcome {}".format(username))
+                    
+                    if gfm=="Yes":
+                      uploaded_file = st.file_uploader("Choose a CSV or Excel file", type=["csv", "xlsx"])
+
+                      if uploaded_file is not None:
+                        # Display details about the uploaded file
+                        st.write("File Details:")
+                        st.write(f"Filename: {uploaded_file.name}")
+                        st.write(f"File Type: {uploaded_file.type}")
+                        st.write(f"File Size: {uploaded_file.size} bytes")
+
+                        # Save the uploaded file to a folder
+                        save_folder = "E:\Test code\data"
+                        os.makedirs(save_folder, exist_ok=True)
+
+                        # Check if uploaded_file has a name attribute
+                        if hasattr(uploaded_file, 'name') and uploaded_file.name is not None:
+                            save_path = os.path.join(save_folder, uploaded_file.name)
+                            with open(save_path, "wb") as file:
+                                file.write(uploaded_file.getvalue())
+
+                            st.success(f"File saved successfully to: {save_path}")
+                  
+                                  
+                    
+                    
+                    
+                    
+                    
+                    
+                    
                     with st.form(key='searchform'):
                       dropdown_options = ['Third Year', 'Fourth Year']
                       nav1,nav2,nav3,nav4=st.columns([3,1,1,1])
